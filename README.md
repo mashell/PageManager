@@ -50,7 +50,7 @@
 	
 	或者
 	
-	```	
+	```	Java
 	@Override
 	public View generateLoadingView() {
 	    return super.generateLoadingView();
