@@ -27,7 +27,7 @@
 	```Java
 	mPageManager = PageManager.init(this, true, new PageListener() {
         ...
-         @Override
+        @Override
         public void setEmptyView(View emptyView) {
             super.setEmptyView(emptyView);
             emptyView.setOnClickListener(new View.OnClickListener() {
