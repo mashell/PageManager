@@ -13,11 +13,11 @@
 
 	```Java
 	mPageManager = PageManager.init(this, true, new PageListener() {
-		    @Override
-		    public void setErrorView(View view) {
-		        
-		    }
-});
+	    @Override
+	    public void setErrorView(View view) {
+	        
+	    }
+	});
 	```
 	
 	对于 单个View，参数传入该 View 即可.**该 View 必须有父 View**
