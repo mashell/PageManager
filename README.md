@@ -66,7 +66,7 @@
 	```Java
 	@Override
 	public int generateLoadingId() {
-	    return super.generateLoadingId();
+	    return R.layout.special_loading_layout;
 	}
 	```
 	
@@ -75,7 +75,7 @@
 	```	Java
 	@Override
 	public View generateLoadingView() {
-	    return super.generateLoadingView();
+	    return specialLoadingView;
 	}
 	```
 
