@@ -3,6 +3,28 @@
 ## 介绍
 低侵入的页面状态管理库，可为 Activity,View 切换 Content,Loading,Error,Empty 视图
 
+## 安装
+1. 将JitPack存储库添加到构建文件中
+
+	将其添加到 项目的 build.gradle 的 repositories 中：
+
+	```
+	allprojects {
+	  repositories {
+		...
+		  maven { url 'https://jitpack.io' }
+	  }
+	}
+	```
+	
+2. 在 app 的 build.gradle 中 dependency 下添加依赖
+
+	```
+	dependencies {
+		compile 'com.github.xcc3641:watcher:1.0'
+	}
+	```
+
 ## 使用
 1. 在全局设置通用的 ```Loading```,```empty```,```error```的布局
 	
