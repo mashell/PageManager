@@ -20,11 +20,14 @@ public class PageManager {
 
     public PageLayout mPageLayout;
 
+    private PageListener mPageListener;
+
+    private boolean ifGeneraLoadingView = false;
+    private boolean ifGeneraErrorView = false;
+    private boolean ifGeneraEmptyView = false;
+
     /**
      * 首次初始化的时候调用，指定通用的 loadingLayout retryLayout emptyLayout
-     * @param loadingLayout
-     * @param retryLayout
-     * @param emptyLayout
      */
     public static void initApp(int loadingLayout, int retryLayout, int emptyLayout) {
         if (loadingLayout > 0) {
@@ -40,16 +43,17 @@ public class PageManager {
 
     /**
      * 单独页面创建 PageManager实例
+     *
      * @param container 需要替换的对象，可以使activity或者有 parentView 的子View
      * @param ifShowLoading 首次进入页面时加载 loadingView 还是 contentView
-     * @param listener  PageManager 的回调，需要特殊设置三种页面的回调请重写对应的 setXXXView() 方法
-     * @return
+     * @param listener PageManager 的回调，需要特殊设置三种页面的回调请重写对应的 setXXXView() 方法
      */
-    public static PageManager init(Object container, boolean ifShowLoading, PageListener listener){
+    public static PageManager init(Object container, boolean ifShowLoading, PageListener listener) {
         return new PageManager(container, ifShowLoading, listener);
     }
 
-    private PageManager(Object container,boolean ifShowLoading, PageListener listener) {
+    private PageManager(Object container, boolean ifShowLoading, PageListener listener) {
+        mPageListener = listener;
         ViewGroup containerParent = null;
         Context context = null;
         int index = 0;
@@ -90,19 +94,19 @@ public class PageManager {
         //设置 contentView
         mPageLayout.setContentView(findView);
 
-        //初始化 emptyView
-        generaEmptyView(listener);
-        //初始化 retryView
-        generaErrorView(listener);
-        //初始化 loadingView
-        generaLoadingView(listener);
+//        //初始化 emptyView
+//        generaEmptyView(listener);
+//        //初始化 retryView
+//        generaErrorView(listener);
+//        //初始化 loadingView
+//        generaLoadingView(listener);
 
         //回调
         listener.setErrorView(mPageLayout.getErrorView());
         listener.setEmptyView(mPageLayout.getEmptyView());
         listener.setLoadingView(mPageLayout.getLoadingView());
 
-        if (ifShowLoading){
+        if (ifShowLoading) {
             showLoadingView();
         } else {
             showContentView();
@@ -111,79 +115,92 @@ public class PageManager {
 
     /**
      * 初始化 EmptyView
-     * @param pageListener
      */
     public void generaEmptyView(PageListener pageListener) {
         //先判断是否重写方法，加载定制的view
         if (pageListener.generateEmptyView() != null) {
             mPageLayout.setEmptyView(pageListener.generateEmptyView());
         } else if (pageListener.generateEmptyId() != PageManager.NO_LAYOUT_ID) {
+            //再判断是否重写过,加载定制的view布局Id
             mPageLayout.setEmptyView(pageListener.generateEmptyView());
         } else if (BASE_EMPTY_LAYOUT_ID != NO_LAYOUT_ID) {
             //没有重写方法来定制view，那么加载初始化时的 base view
             mPageLayout.setEmptyView(BASE_EMPTY_LAYOUT_ID);
         } else {
+            ifGeneraEmptyView = false;
             throw new IllegalArgumentException("You have not use the function 'initApp()' to init the BASE_EMPTY_LAYOUT_ID");
         }
+        ifGeneraEmptyView = true;
     }
 
     /**
      * 初始化 ErrorView
-     * @param pageListener
      */
     public void generaErrorView(PageListener pageListener) {
         if (pageListener.generateErrorView() != null) {
             mPageLayout.setErrorView(pageListener.generateErrorView());
-        } else if (pageListener.generateErrorId() != NO_LAYOUT_ID){
+        } else if (pageListener.generateErrorId() != NO_LAYOUT_ID) {
             mPageLayout.setErrorView(pageListener.generateErrorId());
-        } else if (BASE_ERROR_LAYOUT_ID != NO_LAYOUT_ID){
+        } else if (BASE_ERROR_LAYOUT_ID != NO_LAYOUT_ID) {
             mPageLayout.setErrorView(BASE_ERROR_LAYOUT_ID);
         } else {
+            ifGeneraErrorView = false;
             throw new IllegalArgumentException("You have not use the function 'initApp()' to init the BASE_LOADING_LAYOUT_ID");
         }
+        ifGeneraErrorView = true;
     }
 
     /**
      * 初始化 LoadingView
-     * @param pageListener
      */
     public void generaLoadingView(PageListener pageListener) {
-        if (pageListener.generateLoadingView() != null){
+        if (pageListener.generateLoadingView() != null) {
             mPageLayout.setLoadingView(pageListener.generateLoadingView());
-        } else if (pageListener.generateLoadingId() != NO_LAYOUT_ID){
+        } else if (pageListener.generateLoadingId() != NO_LAYOUT_ID) {
             mPageLayout.setLoadingView(pageListener.generateLoadingId());
         } else if (BASE_LOADING_LAYOUT_ID != NO_LAYOUT_ID) {
             mPageLayout.setLoadingView(BASE_LOADING_LAYOUT_ID);
         } else {
+            ifGeneraLoadingView = false;
             throw new IllegalArgumentException("You have not use the function 'initApp()' to init the BASE_LOADING_LAYOUT_ID");
         }
+        ifGeneraLoadingView = true;
     }
 
     /**
      * 显示 ContentView
      */
-    public void showContentView(){
+    public void showContentView() {
         mPageLayout.showContentView();
     }
 
     /**
      * 显示 ErrorView
      */
-    public void showErrorView(){
+    public void showErrorView() {
+        if (!ifGeneraErrorView) {
+            generaErrorView(mPageListener);
+        }
         mPageLayout.showErrorView();
     }
 
     /**
      * 显示 EmptyView
      */
-    public void showEmptyView(){
+    public void showEmptyView() {
+        if (!ifGeneraEmptyView) {
+            generaEmptyView(mPageListener);
+        }
         mPageLayout.showEmptyView();
     }
 
     /**
      * 显示 LoadingView
      */
-    public void showLoadingView(){
+    public void showLoadingView() {
+        if (!ifGeneraLoadingView) {
+            generaLoadingView(mPageListener);
+        }
         mPageLayout.showLoadingView();
     }
 
